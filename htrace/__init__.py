@@ -1,7 +1,16 @@
 import logging
+import re
 import requests
 import datetime
 import dateparser
+
+USER_AGENT = "htrace-0.1.0/python-3.9"
+
+ACCEPT_VALUES = {
+    "jld": "application/ld+json",
+    "jsonld": "application/ld+json",
+    "json-ld": "application/ld+json",
+}
 
 JSON_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 """datetime format string for generating JSON content
@@ -56,9 +65,17 @@ def datetimeFromSomething(V, assume_local=True):
     if isinstance(V, datetime.datetime):
         return utcFromDateTime(V, assume_local=assume_local)
     if isinstance(V, float) or isinstance(V, int):
-        return utcFromDateTime(
-            datetime.datetime.fromtimestamp(V), assume_local=assume_local
-        )
+        # from time.time(), which is offset from epoch UTC
+        dt = datetime.datetime.fromtimestamp(V)
+        #dt = dt.replace(tzinfo=datetime.timezone.utc)
+        if assume_local:
+            dt = dt.astimezone()
+        else:
+            dt = dt.astimezone(datetime.timezone.utc)
+        return dt
+        #return utcFromDateTime(
+        #    datetime.datetime.fromtimestamp(V), assume_local=assume_local
+        #)
     if isinstance(V, str):
         return utcFromDateTime(
             dateparser.parse(V, settings={"RETURN_AS_TIMEZONE_AWARE": True}),
@@ -88,8 +105,6 @@ def responseSummary(resp, tstart, tend):
         dt = datetimeFromSomething(d)
         return datetimeToJsonStr(dt)
 
-    elapsed = 0.0
-
     def addHistory(r):
         row = {
             "url": r.url,
@@ -105,9 +120,6 @@ def responseSummary(resp, tstart, tend):
         row["last_modified"] = httpDateToJson(row["headers"].get("last-modified", None))
         row["date"] = httpDateToJson(row["headers"].get("date", None))
 
-        nonlocal elapsed
-        elapsed += dtdsecs(r.elapsed)
-
         loc = r.headers.get("Location", None)
         if loc is not None:
             row["result"] = f"Location: {loc}"
@@ -115,12 +127,14 @@ def responseSummary(resp, tstart, tend):
             row["result"] = "<< body >>"
         return row
 
+    elapsed = 0.0
     rs = {
         "request": {},
         "responses": [],
         "resources_loaded": [],
-        "tstart": datetimeToJsonStr(tstart),
-        "tend": datetimeToJsonStr(tend)
+        "tstart": datetimeToJsonStr(datetimeFromSomething(tstart, assume_local=False)),
+        "tend": datetimeToJsonStr(datetimeFromSomething(tend, assume_local=False)),
+        "elapsed": elapsed,
     }
     try:
         rs["resources_loaded"] = resp.resources_loaded
@@ -132,5 +146,52 @@ def responseSummary(resp, tstart, tend):
         rs["request"]["headers"][k] = resp.request.headers.get(k)
     for r in resp.history:
         rs["responses"].append(addHistory(r))
+        elapsed += rs["responses"][-1]["elapsed"]
     rs["responses"].append(addHistory(resp))
+    elapsed += rs["responses"][-1]["elapsed"]
+    rs["elapsed"] = elapsed
     return rs
+
+# FROM: https://github.com/digitalbazaar/pyld/blob/master/lib/pyld/jsonld.py L337
+# With adjustment to always return lists
+def parseLinkHeader(header):
+    """
+    Parses a link header. The results will be key'd by the value of "rel".
+    Link: <http://json-ld.org/contexts/person.jsonld>; \
+      rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+    Parses as: {
+      'http://www.w3.org/ns/json-ld#context': [
+          {
+            target: http://json-ld.org/contexts/person.jsonld, 
+            type: 'application/ld+json'
+          }
+      ]
+    }
+    If there is more than one "rel" with the same IRI, then entries in the
+    resulting map for that "rel" will be lists.
+    :param header: the link header to parse.
+    :return: the parsed result.
+    """
+    rval = {}
+    # split on unbracketed/unquoted commas
+    entries = re.findall(r'(?:<[^>]*?>|"[^"]*?"|[^,])+', header)
+    if not entries:
+        return rval
+    r_link_header = r'\s*<([^>]*?)>\s*(?:;\s*(.*))?'
+    for entry in entries:
+        match = re.search(r_link_header, entry)
+        if not match:
+            continue
+        match = match.groups()
+        result = {'target': match[0]}
+        params = match[1]
+        r_params = r'(.*?)=(?:(?:"([^"]*?)")|([^"]*?))\s*(?:(?:;\s*)|$)'
+        matches = re.findall(r_params, params)
+        for match in matches:
+            result[match[0]] = match[2] if match[1] is None else match[1]
+        rel = result.get('rel', '')
+        if isinstance(rval.get(rel), list):
+            rval[rel].append(result)
+        else:
+            rval[rel] = [result,]
+    return rval
