@@ -9,6 +9,7 @@ Options:
   -T, --timeout INTEGER    Request timeout in seconds
   -a, --accept TEXT        Accept header value
   -j, --json               Report in JSON
+  -k, --insecure           Don't verify certificates
   -b, --body               Show response body
   -L, --link-type TEXT     Follow link header with type
   -R, --link-rel TEXT      Follow link header with rel

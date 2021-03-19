@@ -6,6 +6,7 @@ import requests
 import json
 import time
 import urllib.parse
+import urllib3
 
 W  = '\033[0m'  # white (normal)
 R  = '\033[31m' # red
@@ -15,7 +16,7 @@ B  = '\033[34m' # blue
 P  = '\033[35m' # purple
 
 #Global for access by event hooks
-session = requests.Session()    
+session = requests.Session()
 
 def printSummary(s):
     L = logging.getLogger("SUMMARY:")
@@ -69,13 +70,17 @@ def cbLinkFollow(response, *args, **kwargs):
 @click.option("-T", "--timeout", default=10, help="Request timeout in seconds")
 @click.option("-a", "--accept", default="*/*", help="Accept header value")
 @click.option("-j", "--json", "json_report", is_flag=True, help="Report in JSON")
+@click.option("-k", "--insecure", default=False, is_flag=True, help="Don't verify certificates")
 @click.option("-b", "--body", is_flag=True, help="Show response body")
 @click.option("-L", "--link-type", default=None, help="Follow link header with type")
 @click.option("-R", "--link-rel", default='alternate', help="Follow link header with rel")
 @click.option("-P", "--link-profile", default=None, help="Follow link header with profile")
-def main(url, timeout, accept, json_report, body, link_type, link_rel, link_profile):
+def main(url, timeout, accept, json_report, insecure, body, link_type, link_rel, link_profile):
+    if insecure:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
     logging.basicConfig(
-        level=logging.INFO, 
+        level=logging.INFO,
         format="%(asctime)s.%(msecs)03d:%(name)s %(message)s",
         datefmt='%Y-%m-%d %H:%M:%S')
     accept = htrace.ACCEPT_VALUES.get(accept, accept)
@@ -89,11 +94,11 @@ def main(url, timeout, accept, json_report, body, link_type, link_rel, link_prof
     }
     tstart = time.time()
     session._extra = {
-        'link_type':link_type, 
-        'link_rel': link_rel, 
+        'link_type':link_type,
+        'link_rel': link_rel,
         'link_profile': link_profile
     }
-    response = session.get(url, timeout=timeout, headers=headers, hooks=hooks, allow_redirects=True)
+    response = session.get(url, timeout=timeout, headers=headers, hooks=hooks, allow_redirects=True, verify=not insecure)
     tend = time.time()
     summary = htrace.responseSummary(response, tstart, tend)
     if json_report:
