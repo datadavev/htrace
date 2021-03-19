@@ -6,6 +6,7 @@ import requests
 import json
 import time
 import urllib.parse
+import urllib3
 
 W  = '\033[0m'  # white (normal)
 R  = '\033[31m' # red
@@ -75,6 +76,9 @@ def cbLinkFollow(response, *args, **kwargs):
 @click.option("-R", "--link-rel", default='alternate', help="Follow link header with rel")
 @click.option("-P", "--link-profile", default=None, help="Follow link header with profile")
 def main(url, timeout, accept, json_report, insecure, body, link_type, link_rel, link_profile):
+    if insecure:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s.%(msecs)03d:%(name)s %(message)s",
