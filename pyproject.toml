@@ -1,12 +1,15 @@
 [tool.poetry]
 name = "htrace"
-version = "0.1.0"
+version = "0.1.1"
 description = "Tracing HTTP requests over redirects, link headers"
 authors = ["datadavev <605409+datadavev@users.noreply.github.com>"]
 license = "Apache 2.0"
+readme = "README.md"
+repository = "https://github.com/datadavev/htrace"
+keywords = ["http", "debug", "trace"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.6"
 requests = "^2.25.1"
 click = "^7.1.2"
 dateparser = "^1.0.0"
