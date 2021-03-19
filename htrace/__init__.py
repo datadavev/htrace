@@ -83,6 +83,8 @@ def datetimeFromSomething(V, assume_local=True):
         )
     return None
 
+def dtdsecs(t):
+    return t.seconds + t.microseconds / 1000000.0
 
 def responseSummary(resp, tstart, tend):
     """
@@ -95,9 +97,6 @@ def responseSummary(resp, tstart, tend):
         dict
 
     """
-
-    def dtdsecs(t):
-        return t.seconds + t.microseconds / 1000000.0
 
     def httpDateToJson(d):
         if d is None:

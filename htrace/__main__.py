@@ -13,9 +13,6 @@ O  = '\033[33m' # orange
 B  = '\033[34m' # blue
 P  = '\033[35m' # purple
 
-def dtdsecs(t):
-    return t.seconds + t.microseconds / 1000000.0
-
 def printSummary(s):
     L = logging.getLogger("SUMMARY:")
     L.info(f"Start URL: {s['responses'][0]['url']}")
@@ -33,7 +30,7 @@ def cbUrl(response, *args, **kwargs):
     rh = response.headers
     for h in sorted(response.headers.keys()):
         IN.info(f"{B}{h}{W}: {response.headers[h]}")
-    IN.info(f"{R}{dtdsecs(response.elapsed):.4f} sec{W}")
+    IN.info(f"{R}{htrace.dtdsecs(response.elapsed):.4f} sec{W}")
 
 @click.command()
 @click.argument("url")
