@@ -2,6 +2,17 @@
 
 Simple command line utility for tracing HTTP requests over redirects.
 
+```
+Usage: htrace [OPTIONS] URL
+
+Options:
+  -T, --timeout INTEGER  Request timeout in seconds
+  -a, --accept TEXT      Accept header value
+  -j, --json             Report in JSON
+  -b, --body             Show response body
+  --help                 Show this message and exit.
+```
+
 Example:
 ```
 % htrace "http://schema.org/"
