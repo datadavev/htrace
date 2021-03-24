@@ -69,13 +69,14 @@ def cbLinkFollow(response, *args, **kwargs):
 @click.argument("url")
 @click.option("-T", "--timeout", default=10, help="Request timeout in seconds")
 @click.option("-a", "--accept", default="*/*", help="Accept header value")
+@click.option("-b", "--body", is_flag=True, help="Show response body")
 @click.option("-j", "--json", "json_report", is_flag=True, help="Report in JSON")
 @click.option("-k", "--insecure", default=False, is_flag=True, help="Don't verify certificates")
-@click.option("-b", "--body", is_flag=True, help="Show response body")
 @click.option("-L", "--link-type", default=None, help="Follow link header with type")
-@click.option("-R", "--link-rel", default='alternate', help="Follow link header with rel")
 @click.option("-P", "--link-profile", default=None, help="Follow link header with profile")
-def main(url, timeout, accept, json_report, insecure, body, link_type, link_rel, link_profile):
+@click.option("-R", "--link-rel", default='alternate', help="Follow link header with rel")
+@click.option("-U", "--user-agent", default=None, help="User agent header value")
+def main(url, timeout, accept, body, json_report, insecure, link_type, link_profile, link_rel, user_agent):
     if insecure:
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -89,6 +90,8 @@ def main(url, timeout, accept, json_report, insecure, body, link_type, link_rel,
         "Accept": accept,
         "User-Agent": htrace.USER_AGENT,
     }
+    if not user_agent is None:
+        headers["User-Agent"] = user_agent
     hooks = {
         'response': [cbUrl, cbLinkFollow]
     }

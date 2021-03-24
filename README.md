@@ -8,12 +8,13 @@ Usage: htrace [OPTIONS] URL
 Options:
   -T, --timeout INTEGER    Request timeout in seconds
   -a, --accept TEXT        Accept header value
+  -b, --body               Show response body
   -j, --json               Report in JSON
   -k, --insecure           Don't verify certificates
-  -b, --body               Show response body
   -L, --link-type TEXT     Follow link header with type
-  -R, --link-rel TEXT      Follow link header with rel
   -P, --link-profile TEXT  Follow link header with profile
+  -R, --link-rel TEXT      Follow link header with rel
+  -U, --user-agent TEXT    User agent header value
   --help                   Show this message and exit.
 ```
 
