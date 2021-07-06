@@ -44,7 +44,11 @@ def cbUrlMinimum(response, *args, **kwargs):
     OUT = logging.getLogger(">")
     IN = logging.getLogger("<")
     OUT.info(f"{G}{response.request.method}: {response.request.url}{W}")
-    meta = response.headers.get("location", response.headers.get("content-type")).encode("iso-8859-1").decode()
+    meta = (
+        response.headers.get("location", response.headers.get("content-type"))
+        .encode("iso-8859-1")
+        .decode()
+    )
     IN.info(f"{P}{response.status_code}{B} {G}{meta}{W}")
     IN.info(f"{R}{htrace.dtdsecs(response.elapsed):.4f} sec{W}")
 
