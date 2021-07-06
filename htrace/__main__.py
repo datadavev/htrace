@@ -85,6 +85,7 @@ def cbLinkFollow(response, *args, **kwargs):
 
 
 @click.command()
+@click.version_option()
 @click.argument("url")
 @click.option("-T", "--timeout", default=10, help="Request timeout in seconds")
 @click.option("-a", "--accept", default="*/*", help="Accept header value")
@@ -115,6 +116,7 @@ def main(
     link_rel,
     user_agent,
     minimal,
+    version,
     log_time,
 ):
     if insecure:
