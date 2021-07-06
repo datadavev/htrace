@@ -16,6 +16,7 @@ Options:
   -R, --link-rel TEXT      Follow link header with rel
   -U, --user-agent TEXT    User agent header value
   --help                   Show this message and exit.
+  --version                Print version info
 ```
 
 Example:
