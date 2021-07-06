@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "htrace"
-version = "0.2.3"
+version = "0.2.4"
 description = "Tracing HTTP requests over redirects, link headers"
 authors = ["datadavev <605409+datadavev@users.noreply.github.com>"]
 license = "Apache 2.0"
