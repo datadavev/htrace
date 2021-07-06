@@ -116,7 +116,6 @@ def main(
     link_rel,
     user_agent,
     minimal,
-    version,
     log_time,
 ):
     if insecure:
