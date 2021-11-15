@@ -10,9 +10,9 @@ keywords = ["http", "debug", "trace"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-requests = "^2.25.1"
-click = "^7.1.2"
+requests = "^2"
 dateparser = "^1.0.0"
+click = "^8"
 
 [tool.poetry.dev-dependencies]
 
