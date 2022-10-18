@@ -8,16 +8,25 @@ import time
 import urllib.parse
 import urllib3
 
-W = "\033[0m"  # white (normal)
-R = "\033[31m"  # red
-G = "\033[32m"  # green
-O = "\033[33m"  # orange
-B = "\033[34m"  # blue
-P = "\033[35m"  # purple
+W = ""  # white (normal)
+R = ""  # red
+G = ""  # green
+O = ""  # orange
+B = ""  # blue
+P = ""  # purple
+
 
 # Global for access by event hooks
 session = requests.Session()
 
+def enableColors():
+    global W,R,G,O,B,P
+    W = "\033[0m"  # white (normal)
+    R = "\033[31m"  # red
+    G = "\033[32m"  # green
+    O = "\033[33m"  # orange
+    B = "\033[34m"  # blue
+    P = "\033[35m"  # purple
 
 def printSummary(s):
     L = logging.getLogger("SUMMARY:")
@@ -94,6 +103,9 @@ def cbLinkFollow(response, *args, **kwargs):
 @click.option("-T", "--timeout", default=10, help="Request timeout in seconds")
 @click.option("-a", "--accept", default="*/*", help="Accept header value")
 @click.option("-b", "--body", is_flag=True, help="Show response body")
+@click.option(
+    "-C", "--colors", default=False, is_flag=True, help="Console colors"
+)
 @click.option("-j", "--json", "json_report", is_flag=True, help="Report in JSON")
 @click.option(
     "-k", "--insecure", default=False, is_flag=True, help="Don't verify certificates"
@@ -113,6 +125,7 @@ def main(
     timeout,
     accept,
     body,
+    colors,
     json_report,
     insecure,
     link_type,
@@ -124,6 +137,8 @@ def main(
 ):
     if insecure:
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    if colors:
+        enableColors()
     lformat = "%(name)s %(message)s"
     if log_time:
         lformat = "%(asctime)s.%(msecs)03d:%(name)s %(message)s"
