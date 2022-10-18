@@ -142,3 +142,32 @@ Example following link header:
         "3DModel": {"@id": "schema:3DModel"},
 ...
 ```
+
+## Integrations
+
+A configuration for use with [espanso](https://espanso.org/):
+
+```
+  - trigger: ":htrace"
+    replace: "{{the_trace}}"
+    vars:
+    - name: "form1"
+      type: form
+      params:
+        layout: "URL:[[url]]\n[[accepts]]"
+        fields:
+          url:
+            multiline: false
+          accepts:
+            type: choice
+            values:
+              - "*/*"
+              - "text/html"
+              - "application/ld+json"
+              - "application/json"
+            default: "*/*"
+    - name: the_trace
+      type: shell
+      params:
+        cmd: "htrace -m '{{form1.url}}' 2>&1"
+```
