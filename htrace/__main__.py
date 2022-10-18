@@ -19,14 +19,16 @@ P = ""  # purple
 # Global for access by event hooks
 session = requests.Session()
 
+
 def enableColors():
-    global W,R,G,O,B,P
+    global W, R, G, O, B, P
     W = "\033[0m"  # white (normal)
     R = "\033[31m"  # red
     G = "\033[32m"  # green
     O = "\033[33m"  # orange
     B = "\033[34m"  # blue
     P = "\033[35m"  # purple
+
 
 def printSummary(s):
     L = logging.getLogger("SUMMARY:")
@@ -100,39 +102,37 @@ def cbLinkFollow(response, *args, **kwargs):
 @click.command()
 @click.version_option()
 @click.argument("url")
-@click.option("-T", "--timeout", default=10, help="Request timeout in seconds")
 @click.option("-a", "--accept", default="*/*", help="Accept header value")
 @click.option("-b", "--body", is_flag=True, help="Show response body")
-@click.option(
-    "-C", "--colors", default=False, is_flag=True, help="Console colors"
-)
+@click.option("-C", "--colors", default=False, is_flag=True, help="Enable console colors")
 @click.option("-j", "--json", "json_report", is_flag=True, help="Report in JSON")
 @click.option(
     "-k", "--insecure", default=False, is_flag=True, help="Don't verify certificates"
 )
 @click.option("-L", "--link-type", default=None, help="Follow link header with type")
+@click.option("-m", "--minimal", is_flag=True, help="Minimal redirect info")
 @click.option(
     "-P", "--link-profile", default=None, help="Follow link header with profile"
 )
 @click.option(
     "-R", "--link-rel", default="alternate", help="Follow link header with rel"
 )
+@click.option("-T", "--timeout", default=10, help="Request timeout in seconds")
 @click.option("-U", "--user-agent", default=None, help="User agent header value")
-@click.option("-m", "--minimal", is_flag=True, help="Minimal redirect info")
 @click.option("--log_time", is_flag=True, help="Show timestamp in output")
 def main(
     url,
-    timeout,
     accept,
     body,
     colors,
     json_report,
     insecure,
     link_type,
+    minimal,
     link_profile,
     link_rel,
+    timeout,
     user_agent,
-    minimal,
     log_time,
 ):
     if insecure:

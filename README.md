@@ -6,17 +6,20 @@ Simple command line utility for tracing HTTP requests over redirects.
 Usage: htrace [OPTIONS] URL
 
 Options:
-  -T, --timeout INTEGER    Request timeout in seconds
   -a, --accept TEXT        Accept header value
   -b, --body               Show response body
+  -C, --colors             Console colors
   -j, --json               Report in JSON
   -k, --insecure           Don't verify certificates
   -L, --link-type TEXT     Follow link header with type
+  -m, --minimal            Minimal redirect info
   -P, --link-profile TEXT  Follow link header with profile
   -R, --link-rel TEXT      Follow link header with rel
+  -T, --timeout INTEGER    Request timeout in seconds
   -U, --user-agent TEXT    User agent header value
+  --log_time               Show timestamp in output
   --help                   Show this message and exit.
-  --version                Print version info
+  --version                Show the version and exit.
 ```
 
 Example:
